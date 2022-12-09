@@ -15,6 +15,7 @@ interface Props {
     closeForm: () => void;
     cearteOrEdit: (activity: Activity) => void ;
     deleteActivity: (id: string) => void;
+    submitting: boolean;
 }
 
 // export default function ActivityDashboard(props: Props) {
@@ -33,7 +34,7 @@ interface Props {
 //         </Grid>
 //     )
 
-    export default function ActivityDashboard({activities, selectedActivity, selectActivity, cancelSelectActivity, editMode, openForm, closeForm, cearteOrEdit, deleteActivity}: Props) {
+    export default function ActivityDashboard({activities, selectedActivity, selectActivity, cancelSelectActivity, editMode, openForm, closeForm, cearteOrEdit, deleteActivity, submitting}: Props) {
         return (
             <Grid>
                 <Grid.Column width='10'>
@@ -45,7 +46,7 @@ interface Props {
                             </List.Item>
                         ))}
                     </List> */}
-                    <ActivityList activities={activities} selectActivity={selectActivity} deleteActivity={deleteActivity} />
+                    <ActivityList activities={activities} selectActivity={selectActivity} deleteActivity={deleteActivity} submitting={submitting} />
                 </Grid.Column>
                 <Grid.Column width='6'>
                     {/* <ActivityDetails activity={activities[0]} /> */}
@@ -53,7 +54,7 @@ interface Props {
                     {selectedActivity && !editMode && <ActivityDetails activity={selectedActivity} cancelSelectActivity={cancelSelectActivity} openForm={openForm} />}
                     {/* {activities[0] && <ActivityForm activity={activities[0]} />} */}
                     {/* {selectedActivity && <ActivityForm activity={selectedActivity} />} */}
-                    {editMode && <ActivityForm activity={selectedActivity} closeForm={closeForm} cearteOrEdit={cearteOrEdit} /> }
+                    {editMode && <ActivityForm activity={selectedActivity} closeForm={closeForm} cearteOrEdit={cearteOrEdit} submitting={submitting} /> }
                    
                 </Grid.Column>
             </Grid>

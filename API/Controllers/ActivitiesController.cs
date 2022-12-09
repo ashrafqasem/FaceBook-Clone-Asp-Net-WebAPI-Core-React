@@ -49,7 +49,7 @@ namespace API.Controllers
         //public async Task<IActionResult> CreateActivity([FromBody]Activity activity)
         public async Task<IActionResult> CreateActivity(Activity activity) //. no n [FromBody] 
         {
-            activity.Id = Guid.NewGuid();
+            //activity.Id = Guid.NewGuid(); //x
             return Ok(await _mediator.Send(new Create.Command{ Activity = activity}));
         }
 
