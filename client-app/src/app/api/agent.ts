@@ -39,13 +39,14 @@ const request = {
     del: <T> (url: string) => axios.delete<T>(url).then(responseBody),
 }
 
+let controlerName = '/activities';
 const Activities = {
     //List: () => request.get('/activities')
-    List: () => request.get<Activity[]>('/activities'),
-    details: (id: string) => request.get<Activity>('/activities/' + id),
-    create: (activity: Activity) => request.post<void>('/activities', activity),
-    update: (activity: Activity) => request.put<void>('/activities/' + activity.id, activity),
-    delete: (id: string) => request.del<void>('/activities/' + id)
+    List: () => request.get<Activity[]>(controlerName),
+    details: (id: string) => request.get<Activity>(controlerName + '/' + id),
+    create: (activity: Activity) => request.post<void>(controlerName, activity),
+    update: (activity: Activity) => request.put<void>(controlerName +'/' + activity.id, activity),
+    delete: (id: string) => request.del<void>(controlerName + '/' + id)
 }
 
 const agent = {

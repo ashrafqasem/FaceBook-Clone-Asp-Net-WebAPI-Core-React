@@ -1,15 +1,24 @@
+import { observer } from 'mobx-react-lite';
 import React, { ChangeEvent, useState } from 'react';
 import { Button, Form, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/stores/store';
 
-interface Props {
-    activity: Activity | undefined;
-    closeForm: () => void;
-    cearteOrEdit: (activity: Activity) => void ;
-    submitting: boolean;
-}
+// interface Props {
+//     //activity: Activity | undefined;
+//     //closeForm: () => void;
+//     //cearteOrEdit: (activity: Activity) => void ;
+//     //submitting: boolean;
+// }
 
-export default function ActivityForm({activity: selectedActivity, closeForm, cearteOrEdit, submitting}: Props) {
+//export default function ActivityForm({activity: selectedActivity, closeForm, cearteOrEdit, submitting}: Props) {
+//export default function ActivityForm({cearteOrEdit, submitting}: Props) {
+export default observer(function ActivityForm() {
+
+    const {activityStore} = useStore(); //' nw
+
+    //const {selectedActivity, formClose: closeForm} = activityStore; //' nw
+    const {selectedActivity, formClose: closeForm, createActivity, updateActivity, loading: submitting} = activityStore; //' nw
 
     const initialState = selectedActivity ?? {
         id: '',
@@ -26,7 +35,15 @@ export default function ActivityForm({activity: selectedActivity, closeForm, cea
     function handleSubmit() {
         console.log(activity); 
         //setActivity(activity);
-        cearteOrEdit(activity);
+        //cearteOrEdit(activity);
+
+        // if (activity.id) {
+        //     updateActivity(activity);
+        // }else {
+        //     createActivity(activity);
+        // }
+
+        activity.id ?  updateActivity(activity) :  createActivity(activity);
     }
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -49,4 +66,6 @@ export default function ActivityForm({activity: selectedActivity, closeForm, cea
             </Form>
         </Segment>
     )
-}
+
+//} //'
+})
