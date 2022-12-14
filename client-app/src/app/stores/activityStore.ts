@@ -12,7 +12,7 @@ export default class ActivityStore {
 
     //selectedActivity: Activity | null = null; //'
     selectedActivity: Activity | undefined = undefined; //'
-    //selectedActivity?: Activity = undefined; //'
+    //selectedActivity: Activity = undefined; //'
 
     editMode = false;
     loading = false;
@@ -30,10 +30,20 @@ export default class ActivityStore {
         makeAutoObservable(this);
     }
 
-    get activityByDate() {
+    get activitiesByDate() {
         return Array.from(this.activityRegistry.values()).sort((a,b) => 
             Date.parse(a.date) - Date.parse(b.date)
         );
+    }
+
+    get groupedActivities() {
+        return Object.entries(
+            this.activitiesByDate.reduce((activities, activity) => {
+                const date = activity.date;
+                activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+                return activities;
+            }, {} as {[key: string]: Activity[]})
+        )
     }
 
     // setTitle() {
@@ -302,8 +312,6 @@ export default class ActivityStore {
             }
         }
     }
-
-
 
 }
 
