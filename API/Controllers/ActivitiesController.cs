@@ -37,7 +37,6 @@ namespace API.Controllers
             return await _mediator.Send(new List.Query(), cancellationToken);
         }
 
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {

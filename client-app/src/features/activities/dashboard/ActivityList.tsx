@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React, { SyntheticEvent, useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { Button, DropdownDivider, Item, Label, List, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
@@ -18,7 +19,8 @@ export default observer( function ActivityList() {
     const [target, setTarget] = useState('');
     const {activityStore} = useStore(); //' nw
     //const {activities, deleteActivity, loading: submitting } = activityStore; //' nw 
-    const {activityByDate: activities, deleteActivity, loading: submitting } = activityStore; //' nw 
+    //const {activityByDate: activities, selectActivity, deleteActivity, loadActivity, loading: submitting } = activityStore; //' nw 
+    const {activityByDate: activities, deleteActivity, loadActivity, loading: submitting } = activityStore; //' nw 
 
     //event: any
     // function handleActivityDelete(event: any, id: string) {
@@ -57,7 +59,7 @@ export default observer( function ActivityList() {
                             <Item.Extra>
                                 {/* <Button floated='right' content='View' color='blue' /> */}
                                 {/* <Button floated='right' content='View' color='blue' onClick={() => selectActivity(activity.id)} /> */}
-                                <Button floated='right' content='View' color='blue' onClick={() => activityStore.selectActivity(activity.id)} />
+                                <Button floated='right' content='View' color='blue' as={Link} to={`/activities/${activity.id}`}  />
 
                                 {/* <Button floated='right' content='Delete' color='red' onClick={() => deleteActivity(activity.id)} loading={submitting} name={activity.id} /> */}
                                 <Button floated='right' content='Delete' color='red' onClick={(event) => handleActivityDelete(event, activity.id)} loading={submitting && target === activity.id} name={activity.id} />
