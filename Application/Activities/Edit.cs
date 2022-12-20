@@ -7,17 +7,29 @@ using MediatR;
 using Domain;
 using Persistence;
 using AutoMapper;
+using FluentValidation;
+using Application.Core;
 
 namespace Application.Activities
 {
     public class Edit
     {
-        public class Command : IRequest 
+        //public class Command : IRequest
+        public class Command : IRequest<Result<Unit>>
         {
-            public Activity Actitvity { get; set; }
+            public Activity Activity { get; set; }
+        }
+        
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Activity).SetValidator(new ActivityValidator() );
+            }
         }
 
-        public class Handler : IRequestHandler<Command>
+        //public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -28,19 +40,30 @@ namespace Application.Activities
                 this._mapper = mapper;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            //public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                Activity activity = await _context.Activities.FindAsync(request.Actitvity.Id);
-                
-                // activity = request.Actitvity;
-                // _context.Activities.Update(activity);
+                Activity obj = await _context.Activities.FindAsync(request.Activity.Id);
+                if (obj == null ) { return null; } //' n
 
-                //activity.Title =  request.Actitvity.Title ?? activity.Title;
+                // obj = request.Activity;
+                // _context.Activities.Update(obj);
 
-                _mapper.Map(request.Actitvity, activity);
+                //obj.Title =  request.Activity.Title ?? obj.Title;
 
-                await _context.SaveChangesAsync();
-                return Unit.Value;
+                _mapper.Map(request.Activity, obj);
+                //await _context.SaveChangesAsync();
+                //return Unit.Value;
+
+                bool hasEntries =  await _context.SaveChangesAsync() > 0;
+
+                if (!hasEntries) 
+                { 
+                    return Result<Unit>.Failure("Failed to update record!"); 
+                }
+
+                return Result<Unit>.Success(Unit.Value);
+
             }
 
         }

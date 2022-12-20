@@ -12,9 +12,11 @@ export default function HomePage() {
             <Container text >
                 <Header as='h1' inverted >
                     <Image size='massive' src='/assets/logo.png' alt='logo' style={{marginBottom: 12}} />
-                    Reactivities
+                    {/* Reactivities */}
+                    Facebook-clone
                 </Header>
-                <Header as='h2' inverted content='Welcome to Reactivities' />
+                {/* <Header as='h2' inverted content='Welcome to Reactivities' /> */}
+                <Header as='h2' inverted content='Welcome to Facebook-clone' />
                 <Button as={Link} to='/activities' size='huge' inverted >
                     Take me to the Activities!
                 </Button>

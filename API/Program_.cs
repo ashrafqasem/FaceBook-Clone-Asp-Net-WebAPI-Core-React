@@ -1,3 +1,5 @@
+// using API.Middleware;
+
 // var builder = WebApplication.CreateBuilder(args);
 
 // // Add services to the container.
@@ -10,13 +12,17 @@
 // var app = builder.Build();
 
 // // Configure the HTTP request pipeline.
+// app.UseMiddleware<ExceptionMiddleware>(); //'
+
 // if (app.Environment.IsDevelopment())
 // {
+//     //app.UseDeveloperExceptionPage(); //' x
 //     app.UseSwagger();
 //     app.UseSwaggerUI();
 // }
 
-// app.UseHttpsRedirection();
+// //app.UseHttpsRedirection(); //'
+// app.UseCors("CorsPolicy"); //' after app.UseRouting();
 
 // app.UseAuthorization();
 

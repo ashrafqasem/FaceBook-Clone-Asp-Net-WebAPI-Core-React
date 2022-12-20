@@ -18,15 +18,18 @@ export default function NavBar() {
                 {/* <Menu.Item header> */}
                 <Menu.Item header as={NavLink} to='/' >
                     <img src="/assets/logo.png" alt="logo" style={{marginRight: '10px'}} />
-                    Reactivities
+                    {/* Reactivities */}
+                    Facebook-clone
                 </Menu.Item>
                 {/* <Menu.Item name='Activities' /> */}
                 <Menu.Item name='Activities' as={NavLink} to='/activities' />
+                <Menu.Item name='Errors' as={NavLink} to='/errors' />
                 <Menu.Item>
                     {/* <Button positive content='Create Activity' onClick={openForm} /> */}
                     {/* <Button positive content='Create Activity' onClick={() => activityStore.formOpen()} /> */}
                     <Button positive content='Create Activity' as={NavLink} to='/createActivity' />
                 </Menu.Item>
+                
             </Container>
         </Menu>
 

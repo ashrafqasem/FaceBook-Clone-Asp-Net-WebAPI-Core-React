@@ -61,7 +61,8 @@ function App() {
 
   return ( //'
     <div>
-      <Header as='h2' icon='users' content='Reactivities' />
+      {/* <Header as='h2' icon='users' content='Reactivities' /> */}
+      <Header as='h2' icon='users' content='Facebook-clone' />
       <List>
           {activities. map((activity: any) => (
             <List.Item key={activity.id}>
