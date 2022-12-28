@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Application.Activities;
 using Application.Core;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -43,6 +44,7 @@ namespace API.Controllers
             return HandleResult(resultObjList);
         }
 
+        //[Authorize] //' n
         [HttpGet("{id}")]
         //public async Task<ActionResult<Activity>> GetActivity(Guid id)
         public async Task<IActionResult> GetActivity(Guid id)

@@ -20,6 +20,8 @@ using AutoMapper;
 using Application.Core;
 using API.Extensions;
 using API.Middleware;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace API
 {
@@ -65,8 +67,15 @@ namespace API
             // services.AddMediatR(typeof(List.Handler).Assembly); //'
             // services.AddAutoMapper(typeof(MappingProfiles).Assembly); //'
 
-            services.AddControllers();  
+            //services.AddControllers();  
+            services.AddControllers(opt => { //' n
+                AuthorizationPolicy authorizationPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+                opt.Filters.Add(new AuthorizeFilter(authorizationPolicy));
+            });
+
             services.AddApplicationServices(_config); //'
+            services.AddIdentityServices(_config); //'
             
         }
 
@@ -77,7 +86,7 @@ namespace API
             
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage(); //. to see exeption pade in Dev only
+                app.UseDeveloperExceptionPage(); //. to see exeption page in Dev only
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             }
@@ -85,9 +94,9 @@ namespace API
             //app.UseHttpsRedirection(); //'
 
             app.UseRouting();
-
             app.UseCors("CorsPolicy"); //' after app.UseRouting();
 
+            app.UseAuthentication(); //' n - befor app.UseAuthorization();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

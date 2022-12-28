@@ -1,48 +1,73 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-//
-using Persistence;
+using API.Extensions;
+using API.Middleware;
+using Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
-namespace API
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+//builder.Services.AddControllers();
+builder.Services.AddControllers(opt => { //' n
+    AuthorizationPolicy authorizationPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+    opt.Filters.Add(new AuthorizeFilter(authorizationPolicy));
+});
+
+
+// // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen();
+    
+//services.AddApplicationServices(_config); //'
+builder.Services.AddApplicationServices(builder.Configuration); //'
+
+//services.AddIdentityServices(_config); //'
+builder.Services.AddIdentityServices(builder.Configuration); //' 
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>(); //'
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        //public static async void Main(string[] args) //'
-        public static async Task Main(string[] args) //'
-        {
-            //CreateHostBuilder(args).Build().Run(); //'
-            IHost host = CreateHostBuilder(args).Build(); //'
-            using IServiceScope serviceScope = host.Services.CreateScope(); //'
-            IServiceProvider serviceProvider = serviceScope.ServiceProvider; //'
-
-            try //'
-            {
-                DataContext context = serviceProvider.GetRequiredService<DataContext>();
-                //context.Database.Migrate();
-                await context.Database.MigrateAsync();
-                await Seed.SeedData(context);
-                //host.Run(); // To start the applecation 
-                await host.RunAsync(); // To start the applecation 
-            }
-            catch(Exception ex)
-            {
-                ILogger<Program> logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occured during migration");
-            }
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>(); 
-                });
-    }
+    //app.UseDeveloperExceptionPage(); //' x
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+//app.UseHttpsRedirection(); //'
+app.UseCors("CorsPolicy"); //' after app.UseRouting();
+
+app.UseAuthentication(); //' n - befor app.UseAuthorization();
+app.UseAuthorization();
+
+app.MapControllers();
+
+//'
+using IServiceScope serviceScope = app.Services.CreateScope(); //'
+IServiceProvider serviceProvider = serviceScope.ServiceProvider; //'
+
+try //'
+{
+    DataContext context = serviceProvider.GetRequiredService<DataContext>();
+    UserManager<AppUser> userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>(); //. n
+
+    //context.Database.Migrate();
+    await context.Database.MigrateAsync();
+
+    //await Seed.SeedData(context);
+    await Seed.SeedData(context, userManager); 
+}
+catch (Exception ex)
+{
+    ILogger<Program> logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occured during migration");
+}
+
+app.Run();
