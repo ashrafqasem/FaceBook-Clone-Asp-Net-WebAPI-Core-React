@@ -63,14 +63,32 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            List<string> errorList = new List<string>();
+            string error = "";
+            string errors = "";
+           
             if(await _userManager.Users.AnyAsync(x => x.UserName == registerDto.UserName))
             {
-                return BadRequest("Username is already taken");
+                error = "Username is already taken";
+
+                //return BadRequest(error);
+                //errorList.Add(error);
+
+                ModelState.AddModelError("UserName", error);
+                //return BadRequest(ModelState);
+                return ValidationProblem();
             }
 
             if(await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
             {
-                return BadRequest("Email is already taken");
+                error = "Email is already taken";
+
+                //return BadRequest(error);
+                //errorList.Add(error);
+
+                ModelState.AddModelError("Email", error);
+                //return BadRequest(ModelState);
+                return ValidationProblem();
             }
 
             AppUser appUser = new AppUser();
@@ -87,21 +105,26 @@ namespace API.Controllers
             }
             else
             {
-                List<string> errorList = new List<string>();
+                //List<string> errorList = new List<string>();
                 
                 foreach(IdentityError identityError in identityResult.Errors)
                 {
-                    errorList.Add(identityError.Description);
+                    //errorList.Add(identityError.Description);
+                    ModelState.AddModelError(identityError.Code, identityError.Description);
                 }
 
-                string errors = "";
-                errors = "Problem registering user";
-                errors = string.Join('\n', errorList);
+                //string errors = "";
+                //errors = "Problem registering user";
+                //errors = string.Join('\n', errorList);
                 
-                return BadRequest(errors);
+                //return BadRequest(errors);
                 //return BadRequest(identityResult.Errors);
             }
 
+            //return BadRequest(errors);
+            //return BadRequest(errorList);
+            //return BadRequest(ModelState);
+            return ValidationProblem();
         }
 
         [Authorize]

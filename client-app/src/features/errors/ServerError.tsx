@@ -13,19 +13,19 @@ export default observer( function ServerError() {
             {/* <Header sub as='h5' content={commonStore.serverError?.message} color='red' /> */}
             {/* <Header sub as='h5' content={commonStore.serverError} color='red' /> */}
 
-            {/* {commonStore.serverError?.details && (
+            {commonStore.serverError?.details && (
                 <Segment>
                     <Header as='h4' content='Stack trace' color='teal' />
                     <code style={{marginTop: '10px'}}>{commonStore.serverError.details}</code>
                 </Segment>
-            )} */}
+            )}
 
-            {commonStore.serverError && (
+            {/* {commonStore.serverError && ( //.
                 <Segment>
                     <Header as='h4' content='Stack trace' color='teal' />
                     <code style={{marginTop: '10px'}}>{commonStore.serverError}</code>
                 </Segment>
-            )}
+            )} */}
 
         </Container>
     )

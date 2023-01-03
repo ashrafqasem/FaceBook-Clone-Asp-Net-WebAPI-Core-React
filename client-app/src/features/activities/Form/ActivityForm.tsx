@@ -28,13 +28,13 @@ import MyDateInput from '../../../app/common/form/MyDateInput';
 //export default function ActivityForm({cearteOrEdit, submitting}: Props) {
 export default observer(function ActivityForm() {
 
-    const {activityStore} = useStore(); //' nw
+    const {activityStore} = useStore(); //' n
 
-    //const {selectedActivity, formClose: closeForm} = activityStore; //' nw
-    //const {selectedActivity, formClose: closeForm, createActivity, updateActivity, loading: submitting} = activityStore; //' nw
-    const {selectedActivity, createActivity, updateActivity, loading: submitting, loadActivity, loadingInitial} = activityStore; //' nw
-    const {id} = useParams();  //' nw
-    const navigate  = useNavigate();//' nw
+    //const {selectedActivity, formClose: closeForm} = activityStore; //' n
+    //const {selectedActivity, formClose: closeForm, createActivity, updateActivity, loading: submitting} = activityStore; //' n
+    const {selectedActivity, createActivity, updateActivity, loading: submitting, loadActivity, loadingInitial} = activityStore; //' 
+    const {id} = useParams();  //' n
+    const navigate  = useNavigate();//' n
 
     //const [activity, setActivity] = useState(initialState);
     // const initialState = selectedActivity ?? {
@@ -55,7 +55,7 @@ export default observer(function ActivityForm() {
         //date: '',
         date: null,
         city: '',
-        venue: ''
+        venue: '',
     });
 
     let msgRequired = 'This field is required';
@@ -167,9 +167,10 @@ export default observer(function ActivityForm() {
                 initialValues={activity} 
                 enableReinitialize 
                 validationSchema={validationSchema} 
+
                 // onSubmit={values => console.log(values)} 
                 onSubmit={values => handleFormSubmit(values)} 
-                >
+            >
                 {({ handleSubmit, isValid, isSubmitting, dirty }) => (
                     <Form className='ui form' onSubmit={handleSubmit} autoComplete='off' >
 

@@ -73,7 +73,7 @@ export default class ActivityStore {
             //     activities.push(activity);
             // });
 
-            const activities = await agent.Activities.List().then();
+            const activities = await agent.Activities.list().then();
 
             // //Fix for Date
             // activities.forEach(activity => {

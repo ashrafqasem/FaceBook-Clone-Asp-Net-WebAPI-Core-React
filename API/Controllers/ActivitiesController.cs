@@ -16,6 +16,7 @@ namespace API.Controllers
 {
     // [ApiController] //'
     // [Route("api/[controller]")]
+    [AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
         // private readonly DataContext _context;

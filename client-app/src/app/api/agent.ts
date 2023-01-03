@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify';
 import { Activity } from '../models/activity';
+import { User, UserFormValues } from '../models/user';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 
@@ -78,6 +79,15 @@ axios.interceptors.response.use(async response => {
     return Promise.reject(axiosError);
 })
 
+axios.interceptors.request.use(config => { //' n  -> to pass token to the request header to getUser 
+    const token = store.commonStore.token;
+    if(token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+})
+
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
 //const responseBody = (response: AxiosResponse) => response.data;
@@ -91,18 +101,27 @@ const request = {
     del: <T> (url: string) => axios.delete<T>(url).then(responseBody),
 }
 
-let controlerName = '/activities';
+let controlerNameActivities = '/activities';
 const Activities = {
-    //List: () => request.get('/activities')
-    List: () => request.get<Activity[]>(controlerName),
-    details: (id: string) => request.get<Activity>(controlerName + '/' + id),
-    create: (activity: Activity) => request.post<void>(controlerName, activity),
-    update: (activity: Activity) => request.put<void>(controlerName +'/' + activity.id, activity),
-    delete: (id: string) => request.del<void>(controlerName + '/' + id)
+    //list: () => request.get('/activities')
+    list: () => request.get<Activity[]>(controlerNameActivities),
+    details: (id: string) => request.get<Activity>(controlerNameActivities + '/' + id),
+    create: (activity: Activity) => request.post<void>(controlerNameActivities, activity),
+    update: (activity: Activity) => request.put<void>(controlerNameActivities +'/' + activity.id, activity),
+    delete: (id: string) => request.del<void>(controlerNameActivities + '/' + id)
+}
+
+let controlerNameAccount = '/account'; //.
+const Account = { //.
+    login: (userFormValues: UserFormValues) => request.post<User>(controlerNameAccount + '/login', userFormValues),
+    register: (userFormValues: UserFormValues) => request.post<User>(controlerNameAccount + '/Register', userFormValues),
+    //current: () => request.get<User>(controlerNameAccount + '/GetCurrentUser'), //. x
+    current: () => request.get<User>(controlerNameAccount), //' k
 }
 
 const agent = {
-    Activities
+    Activities,
+    Account, //.
 }
 
 export default agent;
