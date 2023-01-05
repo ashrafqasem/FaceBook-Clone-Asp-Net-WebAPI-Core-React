@@ -17,8 +17,11 @@ namespace Domain
         public string Category { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
-        //public bool IsCancelled { get; set; }
-        //public ICollection<ActivityAttendee> Attendees { get; set; } = new List<ActivityAttendee>();
+        public bool IsCancelled { get; set; }
+        
+        //public ICollection<AppUser> Attendees { get; set; }
+        //public ICollection<ActivityAppUser> ActivityAppUsers { get; set; }
+        public ICollection<ActivityAppUser> ActivityAppUsers { get; set; } = new List<ActivityAppUser>();
         //public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

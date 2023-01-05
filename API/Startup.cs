@@ -15,7 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using MediatR;
-using Application.Activities;
+using Application.MediatorHandlers.Activities;
 using AutoMapper;
 using Application.Core;
 using API.Extensions;

@@ -8,15 +8,16 @@ using Persistence;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using Application.Activities;
+using Application.MediatorHandlers.Activities;
 using Application.Core;
 using Microsoft.AspNetCore.Authorization;
+using Application.DTOs;
 
 namespace API.Controllers
 {
     // [ApiController] //'
     // [Route("api/[controller]")]
-    [AllowAnonymous]
+    //[AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
         // private readonly DataContext _context;
@@ -41,7 +42,9 @@ namespace API.Controllers
             //List<Activity> objList = await _mediator.Send(new List.Query(), cancellationToken);
             //return objList;
 
-            Result<List<Activity>> resultObjList = await _mediator.Send(new List.Query(), cancellationToken);
+            //Result<List<Activity>> resultObjList = await _mediator.Send(new List.Query(), cancellationToken);
+            Result<List<ActivityDto>> resultObjList = await _mediator.Send(new List.Query(), cancellationToken); //' n
+
             return HandleResult(resultObjList);
         }
 
@@ -54,8 +57,8 @@ namespace API.Controllers
             //Activity obj = await _mediator.Send(new Details.Query{ Id = id});
             //if (obj == null) return NotFound();
 
-            Result<Activity> resultObj = await _mediator.Send(new Details.Query{ Id = id});
-            
+            //Result<Activity> resultObj = await _mediator.Send(new Details.Query{ Id = id});
+            Result<ActivityDto> resultObj = await _mediator.Send(new Details.Query{ Id = id}); //'n
             // if (resultObj.IsSuccess && resultObj.Value != null ) 
             // { 
             //     return Ok(resultObj.Value); 
@@ -72,28 +75,30 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        //public async Task<IActionResult> CreateActivity([FromBody]Activity obj)
-        public async Task<IActionResult> CreateActivity(Activity obj) //. no n [FromBody] 
+        //public async Task<IActionResult> CreateActivity([FromBody]Activity activity)
+        public async Task<IActionResult> CreateActivity(Activity activity) //. no n [FromBody] 
         {
-            //obj.Id = Guid.NewGuid(); //x
-            //MediatR.Unit mnit = await _mediator.Send(new Create.Command{ Activity = obj});
+            //activity.Id = Guid.NewGuid(); //x
+            //MediatR.Unit mnit = await _mediator.Send(new Create.Command{ Activity = activity});
             //return Ok(unit);
 
-            Result<MediatR.Unit> resultUnit = await _mediator.Send(new Create.Command{ Activity = obj});
+            Result<MediatR.Unit> resultUnit = await _mediator.Send(new Create.Command{ Activity = activity});
             return HandleResult(resultUnit);
         }
 
+        [Authorize(Policy = "IsActivityHost")] //'n
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditActivity(Guid id, Activity obj)
+        public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
-            obj.Id = id;
-            // MediatR.Unit unit = await _mediator.Send(new Edit.Command { Activity = obj});
+            activity.Id = id;
+            // MediatR.Unit unit = await _mediator.Send(new Edit.Command { Activity = activity});
             // return Ok(unit);
 
-            Result<MediatR.Unit> resultUnit = await _mediator.Send(new Edit.Command { Activity = obj});
+            Result<MediatR.Unit> resultUnit = await _mediator.Send(new Edit.Command { Activity = activity});
             return HandleResult(resultUnit);
         }
         
+        [Authorize(Policy = "IsActivityHost")] //'n
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
@@ -102,6 +107,15 @@ namespace API.Controllers
 
             Result<MediatR.Unit> resultUnit = await _mediator.Send(new Delete.Command { Id = id });
             return HandleResult(resultUnit);
+        }
+
+        [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            Result<Unit> resultUnit = await _mediator.Send(new UpdateAttendance.Command { Id = id });
+
+            ActionResult actionResult = HandleResult(resultUnit);
+            return actionResult;
         }
 
     }

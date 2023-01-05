@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Domain;
 using FluentValidation;
 
-namespace Application.Activities
+namespace Application.MediatorHandlers.Activities
 {
     public class ActivityValidator : AbstractValidator<Activity>
     {

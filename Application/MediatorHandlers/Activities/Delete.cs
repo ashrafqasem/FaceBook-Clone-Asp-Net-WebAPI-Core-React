@@ -8,7 +8,7 @@ using MediatR;
 using Persistence;
 using Application.Core;
 
-namespace Application.Activities
+namespace Application.MediatorHandlers.Activities
 {
     public class Delete
     {
