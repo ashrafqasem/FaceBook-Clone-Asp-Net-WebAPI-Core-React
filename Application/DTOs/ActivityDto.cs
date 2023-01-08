@@ -17,7 +17,7 @@ namespace Application.DTOs
         public string City { get; set; }
         public string Venue { get; set; }
          public string HostUserName { get; set; }
-          public bool IsCancelled { get; set; }
+        public bool IsCancelled { get; set; }
         public ICollection<Profile> ActivityAppUsers  { get; set; }
 
     }

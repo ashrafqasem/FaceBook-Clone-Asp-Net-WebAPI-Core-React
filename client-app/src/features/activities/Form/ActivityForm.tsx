@@ -6,7 +6,7 @@ import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
 import { Button, FormField, Header, Label, Segment } from 'semantic-ui-react'; //. Form -> formik
 
 import LoadingComponent from '../../../app/layout/LoadingComponent';
-import { Activity } from '../../../app/models/activity';
+import { Activity, ActivityFormValues } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
 import { v4 as uuid } from 'uuid';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -47,16 +47,23 @@ export default observer(function ActivityForm() {
     //     venue: ''
     // }
 
-    const [activity, setActivity] = useState<Activity>({
-        id: '',
-        title: '',
-        category: '',
-        description: '',
-        //date: '',
-        date: null,
-        city: '',
-        venue: '',
-    });
+    // const [activity, setActivity] = useState<Activity>({
+    //     id: '',
+    //     title: '',
+    //     category: '',
+    //     description: '',
+    //     //date: '',
+    //     date: null,
+    //     city: '',
+    //     venue: '',
+
+    //     // //'n
+    //     // hostUserName: '', 
+    //     // isCancelled: '', 
+    //     // attendees: [], 
+    // });
+
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues()); //'n
 
     let msgRequired = 'This field is required';
 
@@ -71,7 +78,8 @@ export default observer(function ActivityForm() {
 
     useEffect(() => {
         if (id) { 
-            loadActivity(id).then(activity => setActivity(activity!));
+            //loadActivity(id).then(activity => setActivity(activity!));
+            loadActivity(id).then(activity => setActivity(new ActivityFormValues(activity!))); //'n
         }
     }, [id, loadActivity])
 
@@ -97,7 +105,8 @@ export default observer(function ActivityForm() {
        
     // }
 
-    function handleFormSubmit(activity: Activity) {
+    //function handleFormSubmit(activity: Activity) {
+    function handleFormSubmit(activity: ActivityFormValues) { //'n
         console.log(activity); 
         //setActivity(activity);
         //cearteOrEdit(activity);
@@ -191,7 +200,8 @@ export default observer(function ActivityForm() {
                         <MyTextInput placeholder='Venue' name='venue' />
 
                         {/* <Button floated='right' type='submit' content='Submit' positive loading={submitting} /> */}
-                        <Button floated='right' type='submit' content='Submit' positive loading={submitting} disabled={isSubmitting || !dirty || !isValid } />
+                        {/* <Button floated='right' type='submit' content='Submit' positive loading={submitting} disabled={isSubmitting || !dirty || !isValid } /> */}
+                        <Button floated='right' type='submit' content='Submit' positive loading={isSubmitting} disabled={isSubmitting || !dirty || !isValid } />
 
                         <Button floated='right' type='submit' content='Cancel' as={Link} to='/activities'  />
                     </Form>

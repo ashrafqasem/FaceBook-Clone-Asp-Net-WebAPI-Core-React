@@ -1,10 +1,14 @@
 import { throws } from "assert";
 import { action, makeAutoObservable, makeObservable, observable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Activity } from "../models/activity";
+import { Activity, ActivityFormValues } from "../models/activity";
 import {v4 as uuid} from 'uuid';
 import { Console } from "console";
 import {format} from 'date-fns'
+import { store } from "./store";
+import { Profile } from "../models/profile";
+import { getWeekYearWithOptions } from "date-fns/fp";
+import { router } from "../router/Routes";
 
 export default class ActivityStore {
     title = 'Hello from MobX!'; //. test nn
@@ -74,6 +78,8 @@ export default class ActivityStore {
             // });
 
             const activities = await agent.Activities.list().then();
+
+            //console.log(activities); //.
 
             // //Fix for Date
             // activities.forEach(activity => {
@@ -155,6 +161,15 @@ export default class ActivityStore {
         //activity.date = activity.date.split('T')[0];
         activity.date = new Date(activity.date!);
 
+        //'n
+        const user = store.userStore.user; 
+        if(user) {
+            activity.isGoing = activity.activityAppUsers!.some(x => x.userName === user.userName);
+            activity.isHost = activity.hostUserName === user.userName;
+            activity.host = activity.activityAppUsers?.find(x => x.userName === activity.hostUserName)
+        }
+        //'n
+
         //this.activities.push(activity);
         this.activityRegistry.set(activity.id, activity);
     }
@@ -224,8 +239,9 @@ export default class ActivityStore {
     //   }
     // }
 
-    createActivity = async (activity: Activity) => {
-        this.loading = true;
+    //createActivity = async (activity: Activity) => { 
+    createActivity = async (activity: ActivityFormValues) => { //'n
+        //this.loading = true; // nn, use isSubmitting flag from Formik
         //activity.id = uuid(); //.
 
         // agent.Activities.create(activity).then(() => {
@@ -235,50 +251,75 @@ export default class ActivityStore {
         //     setSubmitting(false);
         //   });
 
+        const user = store.userStore.user; //'n
+        const attendee = new Profile(user!); //'n
+        
         try {
             await agent.Activities.create(activity);
+
+            //'n
+            const newActivity = new Activity(activity);
+            newActivity.hostUserName = user!.userName;
+            newActivity.activityAppUsers = [attendee];
+
+            this.setActivity(newActivity);
+            //'n
+
             runInAction(() => {
                 //this.activities = [...this.activities, activity]; //.
                 //this.activities.push(activity);
-                this.activityRegistry.set(activity.id, activity);
 
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading= false
+                //this.activityRegistry.set(activity.id, activity); //' nn >> since we used this.setActivity(newActivity);
+
+                //this.selectedActivity = activity;
+                this.selectedActivity = newActivity; //'n
+
+                // this.editMode = false; //' nn
+                // this.loading= false //' nn
             });
 
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading= false;
-            });
+
+            // runInAction(() => { // No need, use isSubmitting flag from Formik
+            //     this.loading= false;
+            // });
         }
 
     }
 
-    updateActivity = async (activity: Activity) => {
-        this.loading = true;
+    //updateActivity = async (activity: Activity) => {
+    updateActivity = async (activity: ActivityFormValues) => { //'n
+        //this.loading = true; // nn, use isSubmitting flag from Formik
 
         try {
             await agent.Activities.update(activity);
             runInAction(() => {
-                // //this.activities = this.activities.filter(x => x.id !== activity.id); //.
-                // this.activities.filter(x => x.id !== activity.id); //'
-                // this.activities.push(activity); //'
-                //this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
-                this.activityRegistry.set(activity.id, activity);
+                if (activity.id) {
+                    // //this.activities = this.activities.filter(x => x.id !== activity.id); //.
+                    // this.activities.filter(x => x.id !== activity.id); //'
+                    // this.activities.push(activity); //'
+                    //this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
 
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading= false
+                    let updatedActivity = {...this.getActivity(activity.id), ...activity} //'n
+
+                    //this.activityRegistry.set(activity.id, activity);
+                    this.activityRegistry.set(activity.id, updatedActivity as Activity); //'n
+                   
+                    //this.selectedActivity = activity;
+                    this.selectedActivity = updatedActivity as Activity; //'n
+
+                    // this.editMode = false; //' nn
+                    // this.loading= false //' nn
+                }
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading= false;
-            });
-        }
 
+            // runInAction(() => { // nn, use isSubmitting flag from Formik
+            //     this.loading= false;
+            // });
+        }
     }
 
     // function handleDeleteActivity(id: string) {
@@ -316,6 +357,54 @@ export default class ActivityStore {
                     this.loading= false;
                 });
             }
+        }
+    }
+
+    updateAttendanceToggle = async () => {
+        this.loading = true;
+        const user = store.userStore.user;
+
+        try {
+            await agent.Activities.attend(this.selectedActivity!.id);
+
+            runInAction(() => {
+                if (this.selectedActivity?.isGoing) {
+                    this.selectedActivity.activityAppUsers = this.selectedActivity.activityAppUsers?.filter(x => x.userName !== user?.userName);
+                    this.selectedActivity.isGoing = false;
+                } else {
+                    const attendee = new Profile(user!);
+                    this.selectedActivity?.activityAppUsers?.push(attendee);
+                    this.selectedActivity!.isGoing = true;
+                }
+
+                this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
+
+            })
+        } catch (error) {
+            console.log(error);
+        } finally {
+            runInAction(() => {
+                this.loading = false;
+                //router.navigate(`/activities/${this.selectedActivity!.id}`); // not working
+                window.location.reload(); // it works
+            })
+        }
+    }
+
+    cancelActivityToggle = async () => {
+        this.loading = true;
+        try {
+            await agent.Activities.attend(this.selectedActivity!.id);
+            runInAction (() => {
+                this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
+                this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
+            })
+        } catch (error) {
+            console.log(error);
+        } finally {
+            runInAction(() => {
+                this.loading = false;
+            })
         }
     }
 

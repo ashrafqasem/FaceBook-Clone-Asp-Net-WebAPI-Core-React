@@ -13,7 +13,7 @@ export default class UserStore {
     }
 
     get isLoggedIn() {
-        return !!this.user; //' to caxt object to boolient
+        return !!this.user; //' to cast object to boolient
     }
    
     login = async (userFormValues: UserFormValues) => {

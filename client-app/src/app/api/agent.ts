@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify';
-import { Activity } from '../models/activity';
+import { Activity, ActivityFormValues } from '../models/activity';
 import { User, UserFormValues } from '../models/user';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
@@ -90,8 +90,8 @@ axios.interceptors.request.use(config => { //' n  -> to pass token to the reques
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
-//const responseBody = (response: AxiosResponse) => response.data;
-const responseBody = <T> (response: AxiosResponse<T>) => response.data;
+//const responseBody = (axiosResponse: AxiosResponse) => axiosResponse.data;
+const responseBody = <T> (axiosResponse: AxiosResponse<T>) => axiosResponse.data;
 
 const request = {
     //get: (url: string) => axios.get(url).then(responseBody),
@@ -103,12 +103,15 @@ const request = {
 
 let controlerNameActivities = '/activities';
 const Activities = {
-    //list: () => request.get('/activities')
+    //list: () => request.get('/activities') 
     list: () => request.get<Activity[]>(controlerNameActivities),
-    details: (id: string) => request.get<Activity>(controlerNameActivities + '/' + id),
-    create: (activity: Activity) => request.post<void>(controlerNameActivities, activity),
-    update: (activity: Activity) => request.put<void>(controlerNameActivities +'/' + activity.id, activity),
-    delete: (id: string) => request.del<void>(controlerNameActivities + '/' + id)
+    details: (id: string) => request.get<Activity>(`${controlerNameActivities}/${id}`),
+    //create: (activity: Activity) => request.post<void>(controlerNameActivities, activity),
+    create: (activity: ActivityFormValues) => request.post<void>(controlerNameActivities, activity),
+    //update: (activity: Activity) => request.put<void>(`${controlerNameActivities}/${activity.id}`, activity),
+    update: (activity: ActivityFormValues) => request.put<void>(`${controlerNameActivities}/${activity.id}`, activity),
+    delete: (id: string) => request.del<void>(`${controlerNameActivities}/${id}`),
+    attend: (id: string) => request.post<void>(`${controlerNameActivities}/${id}/attend`, {}),
 }
 
 let controlerNameAccount = '/account'; //.

@@ -17,11 +17,11 @@ namespace Domain
         public string Category { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
-        public bool IsCancelled { get; set; }
+        public bool IsCancelled { get; set; } //'n
         
         //public ICollection<AppUser> Attendees { get; set; }
         //public ICollection<ActivityAppUser> ActivityAppUsers { get; set; }
-        public ICollection<ActivityAppUser> ActivityAppUsers { get; set; } = new List<ActivityAppUser>();
+        public ICollection<ActivityAppUser> ActivityAppUsers { get; set; } = new List<ActivityAppUser>(); //'n
         //public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
